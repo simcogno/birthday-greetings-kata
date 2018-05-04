@@ -1,5 +1,6 @@
 package it.xpug.kata.birthday_greetings;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
 
 public class Employee {
@@ -27,6 +28,12 @@ public class Employee {
 	public String getFirstName() {
 		return firstName;
 	}
+	
+	public String getLastName() {
+		return lastName;
+	}
+	
+
 
 	@Override
 	public String toString() {
@@ -46,7 +53,7 @@ public class Employee {
 				+ ((lastName == null) ? 0 : lastName.hashCode());
 		return result;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
