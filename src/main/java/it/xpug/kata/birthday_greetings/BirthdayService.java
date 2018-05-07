@@ -1,9 +1,12 @@
 package it.xpug.kata.birthday_greetings;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -14,8 +17,16 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class BirthdayService {
+	
+	private MessageSender msgSender;
+	private List<Employee> employeeWhoseBirthdayIsToday;
+	
+	public BirthdayService(MessageSender msgSender) {
+		this.msgSender = msgSender;
+		employeeWhoseBirthdayIsToday = new ArrayList<Employee>();
+	}
 
-	public void sendGreetings(String fileName, XDate xDate, String smtpHost, int smtpPort) throws IOException, ParseException, AddressException, MessagingException {
+	public void sendGreetings(String fileName, XDate xDate) throws IOException, ParseException, AddressException, MessagingException {
 		BufferedReader in = new BufferedReader(new FileReader(fileName));
 		String str = "";
 		str = in.readLine(); // skip header
@@ -23,29 +34,16 @@ public class BirthdayService {
 			String[] employeeData = str.split(", ");
 			Employee employee = new Employee(employeeData[1], employeeData[0], employeeData[2], employeeData[3]);
 			if (employee.isBirthday(xDate)) {
-				String recipient = employee.getEmail();
-				String body = "Happy Birthday, dear " + employee.getFirstName() + "!";
-				String subject = "Happy Birthday!";
-				sendMessage(smtpHost, smtpPort, "sender@here.com", subject, body, recipient);
+				employeeWhoseBirthdayIsToday.add(employee);
 			}
 		}
+		send();
+	}
+	
+
+	
+	private void send() throws AddressException, MessagingException {
+		msgSender.sendMessage(employeeWhoseBirthdayIsToday);
 	}
 
-	private void sendMessage(String smtpHost, int smtpPort, String sender, String subject, String body, String recipient) throws AddressException, MessagingException {
-		// Create a mail session
-		java.util.Properties props = new java.util.Properties();
-		props.put("mail.smtp.host", smtpHost);
-		props.put("mail.smtp.port", "" + smtpPort);
-		Session session = Session.getInstance(props, null);
-
-		// Construct the message
-		Message msg = new MimeMessage(session);
-		msg.setFrom(new InternetAddress(sender));
-		msg.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
-		msg.setSubject(subject);
-		msg.setText(body);
-
-		// Send the message
-		Transport.send(msg);
-	}
 }

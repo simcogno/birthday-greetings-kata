@@ -7,6 +7,6 @@ import javax.mail.internet.AddressException;
 
 public interface MessageSender {
 	
-	public void sendMessage(List<Employee> employeeThatHasBirthdayToday) throws AddressException, MessagingException;
+	public void sendMessage(List<Employee> employeeWhoseBirthdayIsToday) throws AddressException, MessagingException;
 
 }

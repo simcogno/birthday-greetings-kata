@@ -29,15 +29,15 @@ public class SMTPSender implements MessageSender {
 	}
 
 	
-	public void sendMessage(List<Employee> employeeThatHasBirthdayToday) throws AddressException, MessagingException {
-		for(Employee e : employeeThatHasBirthdayToday) {
+	public void sendMessage(List<Employee> employeeWhoseBirthdayIsToday) throws AddressException, MessagingException {
+		for(Employee e : employeeWhoseBirthdayIsToday) {
 			
 			// Construct the message
 			Message msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress(sender));
 			msg.setRecipient(Message.RecipientType.TO, new InternetAddress(e.getEmail()));
 			msg.setSubject(subject);
-			msg.setText(body);
+			msg.setText(body + e.getFirstName());
 
 			// Send the message
 			Transport.send(msg);
