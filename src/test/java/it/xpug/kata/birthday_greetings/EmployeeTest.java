@@ -30,15 +30,5 @@ public class EmployeeTest {
 		assertTrue(base.equals(same));	
 	}
 
-	@Test
-	public void equality() throws Exception {
-		Employee base = new Employee("First", "Last", "1999/09/01", "first@last.com");
-		Employee same = new Employee("First", "Last", "1999/09/01", "first@last.com");
-		Employee different = new Employee("First", "Last", "1999/09/01", "boom@boom.com");
 
-		assertFalse(base.equals(null));
-		assertFalse(base.equals(""));
-		assertTrue(base.equals(same));
-		assertFalse(base.equals(different));
-	}
 }
