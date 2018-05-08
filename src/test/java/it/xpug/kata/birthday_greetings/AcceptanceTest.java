@@ -16,7 +16,7 @@ public class AcceptanceTest {
 	@Before
 	public void setUp() throws Exception {
 		mailServer = SimpleSmtpServer.start(NONSTANDARD_PORT);
-		birthdayService = new BirthdayService(new TxtEmployeeParser(), new SMTPSender());
+		birthdayService = new BirthdayService(new TxtEmployeeRepository(), new SMTPGreeter());
 	}
 
 	@After
@@ -24,25 +24,48 @@ public class AcceptanceTest {
 		mailServer.stop();
 		Thread.sleep(200);
 	}
-
+	
 	@Test
-	public void willSendGreetings_whenItsSomebodysBirthday() throws Exception {
-
+	public void willNotSendEmailsWhenNobodysBirthday() throws Exception {
+		
+		birthdayService.sendGreetings(new XDate("2008/01/01"));
+		assertEquals(0, mailServer.getReceivedEmailSize());
+	}
+	
+	@Test
+	public void ifSomeoneHasBirthdayAnEmailIsSend() throws Exception {
 		birthdayService.sendGreetings(new XDate("2008/10/08"));
-
-		assertEquals("message not sent?", 1, mailServer.getReceivedEmailSize());
+		assertEquals(1, mailServer.getReceivedEmailSize());
+	}
+	
+	@Test
+	public void emailBodyIsCorrect() throws Exception {
+		birthdayService.sendGreetings(new XDate("2008/10/08"));
 		SmtpMessage message = (SmtpMessage) mailServer.getReceivedEmail().next();
 		assertEquals("Happy Birthday, dear John", message.getBody());
+	}
+	
+	@Test
+	public void subjectOfGreetingsEmailIsCorrect() throws Exception {
+		birthdayService.sendGreetings(new XDate("2008/10/08"));
+		SmtpMessage message = (SmtpMessage) mailServer.getReceivedEmail().next();
 		assertEquals("Happy Birthday!", message.getHeaderValue("Subject"));
+	}
+	
+	@Test
+	public void allEmployeesWhoHaveBirthdayReceivesGreetings() throws Exception {
+		birthdayService.sendGreetings(new XDate("2008/10/08"));
+		SmtpMessage message = (SmtpMessage) mailServer.getReceivedEmail().next();
 		String[] recipients = message.getHeaderValues("To");
 		assertEquals(1, recipients.length);
+	}
+	
+	@Test
+	public void greetingsAreSendToRightEmployees() throws Exception {
+		birthdayService.sendGreetings(new XDate("2008/10/08"));
+		SmtpMessage message = (SmtpMessage) mailServer.getReceivedEmail().next();
+		String[] recipients = message.getHeaderValues("To");
 		assertEquals("john.doe@foobar.com", recipients[0].toString());
 	}
 
-	@Test
-	public void willNotSendEmailsWhenNobodysBirthday() throws Exception {
-		birthdayService.sendGreetings(new XDate("2008/01/01"));
-
-		assertEquals("what? messages?", 0, mailServer.getReceivedEmailSize());
-	}
 }

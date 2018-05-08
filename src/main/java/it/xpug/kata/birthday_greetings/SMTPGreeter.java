@@ -10,7 +10,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-public class SMTPSender implements MessageSender {
+public class SMTPGreeter implements Greeter {
 	
 	private static final int smtpPort = 9999;
 	private static final String smtpHost = "localhost";
@@ -20,7 +20,7 @@ public class SMTPSender implements MessageSender {
 	
 	private Session session;
 	
-	public SMTPSender() {
+	public SMTPGreeter() {
 		// Create a mail session
 		java.util.Properties props = new java.util.Properties();
 		props.put("mail.smtp.host", smtpHost);
@@ -29,7 +29,7 @@ public class SMTPSender implements MessageSender {
 	}
 
 	
-	public void sendMessage(List<Employee> employeeWhoseBirthdayIsToday) throws AddressException, MessagingException {
+	public void send(List<Employee> employeeWhoseBirthdayIsToday) throws AddressException, MessagingException {
 		for(Employee e : employeeWhoseBirthdayIsToday) {
 			
 			// Construct the message
